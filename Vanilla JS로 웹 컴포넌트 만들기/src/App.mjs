@@ -1,33 +1,52 @@
 import Component from "./core/Component.mjs";
+import ItemAppender from "./components/ItemAppender.mjs";
+import Items from './components/Items.mjs';
 
 export default class App extends Component {
   setup() {
-    this.state = { items: ["item1"] };
+    this.state = {
+      filter: false,
+      items: [
+        {
+          index: 0,
+          content: "some item!",
+          isFiltered: false,
+        },
+      ],
+    };
   }
 
   markup() {
     const { items } = this.state;
+    console.log(items);
     return `
-    <ul>
-      ${items.map((item, idx) => `
-      <li>
-        ${item}
-        <button class="deleteBtn" data-index=${idx}>삭제</button>
-      </li>
-      `).join('')}
-    </ul>
-    <button class="addBtn">추가</button>
+    <div class="itemAppender"></div>
+    <div class="items"></div>
+    <div class="itemFilter"></div>
     `;
   }
 
-  setEvents() {
-    this.addEventListener("click", ".addBtn", () => {
-      this.setState({ items: [...this.state.items, `item${this.state.items.length + 1}`] });
+  afterMount() {
+    new ItemAppender(this.target.querySelector(".itemAppender"), {
+      addItem: this.addItem.bind(this),
     });
-    this.addEventListener("click", ".deleteBtn", (e) => {
-      const { items } = this.state;
-      items.splice(e.target.dataset.index, 1);
-      this.setState({ items });
+    new Items(this.target.querySelector(".items"), {
+      items: this.state.items,
+      deleteItem: this.deleteItem.bind(this),
     })
+  }
+
+  addItem(content) {
+    let { items } = this.state;
+    const index = items.length;
+    const isFiltered = false;
+    items = [...items, { index, content, isFiltered }];
+    this.setState({ items });
+  }
+
+  deleteItem(index) {
+    const items = [...this.state.items];
+    items.splice(items.findIndex(item => item.index === index), 1);
+    this.setState({ items });
   }
 }
