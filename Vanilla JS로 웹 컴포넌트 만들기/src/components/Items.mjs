@@ -8,6 +8,7 @@ export default class Items extends Component {
       ${items.map(({ index, content, isFiltered }) => `
       <li class="item" data-index="${index}">
         ${content}
+        <button class="filterBtn">${isFiltered ? "필터 해제" : "필터링"}</button>
         <button class="deleteBtn">삭제</button>
       </li>
       `).join("")}
@@ -16,9 +17,10 @@ export default class Items extends Component {
   }
 
   setEvents() {
-    const { deleteItem } = this.props;
-    this.addEventListener("click", ".deleteBtn", (e) => {
-      deleteItem(Number(e.target.closest("[data-index]").dataset.index));
+    const { toggleItemFilter, deleteItem } = this.props;
+    this.addEventListener("click", "button", (e) => {
+      if (e.target.classList.contains("filterBtn")) toggleItemFilter(Number(e.target.closest("[data-index]").dataset.index));
+      else if (e.target.classList.contains("deleteBtn")) deleteItem(Number(e.target.closest("[data-index]").dataset.index));
     })
   }
 }

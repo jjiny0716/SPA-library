@@ -1,6 +1,7 @@
 import Component from "./core/Component.mjs";
 import ItemAppender from "./components/ItemAppender.mjs";
 import Items from './components/Items.mjs';
+import ItemFilter from './components/ItemFilter.mjs';
 
 export default class App extends Component {
   setup() {
@@ -17,8 +18,6 @@ export default class App extends Component {
   }
 
   markup() {
-    const { items } = this.state;
-    console.log(items);
     return `
     <div class="itemAppender"></div>
     <div class="items"></div>
@@ -31,9 +30,19 @@ export default class App extends Component {
       addItem: this.addItem.bind(this),
     });
     new Items(this.target.querySelector(".items"), {
-      items: this.state.items,
+      items: this.getFilteredItems(),
       deleteItem: this.deleteItem.bind(this),
-    })
+      toggleItemFilter: this.toggleItemFilter.bind(this),
+    });
+    new ItemFilter(this.target.querySelector(".itemFilter"), {
+      filterItems: this.filterItems.bind(this),
+    });
+  }
+
+  getFilteredItems() {
+    const { filter, items } = this.state;
+    if (filter) return items.filter(item => item.isFiltered === false);
+    return items;
   }
 
   addItem(content) {
@@ -47,6 +56,17 @@ export default class App extends Component {
   deleteItem(index) {
     const items = [...this.state.items];
     items.splice(items.findIndex(item => item.index === index), 1);
+    this.setState({ items });
+  }
+
+  filterItems(filter) {
+    this.setState({ filter });
+  }
+
+  toggleItemFilter(index) {
+    const items = [...this.state.items];
+    const item = items.find(item => item.index === index);
+    item.isFiltered = !item.isFiltered;
     this.setState({ items });
   }
 }
