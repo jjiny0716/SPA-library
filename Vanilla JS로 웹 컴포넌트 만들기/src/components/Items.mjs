@@ -1,7 +1,7 @@
 import Component from "../core/Component.mjs";
 
 export default class Items extends Component {
-  markup() {
+  template() {
     const { items } = this.props;
     return `
     <ul class="itemList">

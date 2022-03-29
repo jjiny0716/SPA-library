@@ -17,11 +17,11 @@ export default class App extends Component {
     };
   }
 
-  markup() {
+  template() {
     return `
-    <div class="itemAppender"></div>
-    <div class="items"></div>
-    <div class="itemFilter"></div>
+    <div class="itemAppender" component></div>
+    <div class="items" component></div>
+    <div class="itemFilter" component></div>
     `;
   }
 
@@ -36,7 +36,7 @@ export default class App extends Component {
     });
     new ItemFilter(this.target.querySelector(".itemFilter"), {
       filterItems: this.filterItems.bind(this),
-    });
+    })
   }
 
   getFilteredItems() {

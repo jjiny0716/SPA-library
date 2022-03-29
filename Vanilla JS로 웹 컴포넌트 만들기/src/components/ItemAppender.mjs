@@ -1,7 +1,7 @@
 import Component from '../core/Component.mjs';
 
 export default class ItemAppender extends Component {
-  markup() {
+  template() {
     return `
     <input type="text" class="itemAppendInput">
     `

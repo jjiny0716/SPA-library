@@ -1,7 +1,7 @@
 import Component from "../core/Component.mjs";
 
 export default class ItemFilter extends Component {
-  markup() {
+  template() {
     return `
     <button class="viewAllBtn">전체 보기</button>
     <button class="filterBtn">필터링</button>
