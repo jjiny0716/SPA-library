@@ -26,17 +26,19 @@ export default class App extends Component {
   }
 
   afterMount() {
-    new ItemAppender(this.target.querySelector(".itemAppender"), {
-      addItem: this.addItem.bind(this),
-    });
-    new Items(this.target.querySelector(".items"), {
-      items: this.getFilteredItems(),
-      deleteItem: this.deleteItem.bind(this),
-      toggleItemFilter: this.toggleItemFilter.bind(this),
-    });
-    new ItemFilter(this.target.querySelector(".itemFilter"), {
-      filterItems: this.filterItems.bind(this),
-    })
+    this.childComponents = {
+      itemAppender: new ItemAppender(this.target.querySelector(".itemAppender"), () => { return {
+        addItem: this.addItem.bind(this),
+      }}),
+      items: new Items(this.target.querySelector(".items"), () => { return {
+        items: this.getFilteredItems(),
+        deleteItem: this.deleteItem.bind(this),
+        toggleItemFilter: this.toggleItemFilter.bind(this),
+      }}),
+      itemFilter: new ItemFilter(this.target.querySelector(".itemFilter"), () => { return {
+        filterItems: this.filterItems.bind(this),
+      }}),
+    }
   }
 
   getFilteredItems() {
