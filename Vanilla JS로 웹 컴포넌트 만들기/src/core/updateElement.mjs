@@ -11,9 +11,19 @@ function updateAttributes(oldNode, newNode) {
   }
 }
 
+function convertNodeToComponentData(node) {
+  if (node instanceof Text || node.getAttribute("data-component-name") === null) return {}
+  return {
+    [node.getAttribute("data-key")]: node.getAttribute("data-component-name"),
+  };
+}
+
 export function updateElement (parent, newNode, oldNode) {
   if (!newNode && oldNode) return oldNode.remove();
-  if (newNode && !oldNode) return parent.appendChild(newNode);
+  if (newNode && !oldNode) {
+    parent.appendChild(newNode);
+    return convertNodeToComponentData(newNode);
+  }
   if (newNode instanceof Text && oldNode instanceof Text) {
     if (oldNode.nodeValue === newNode.nodeValue) return;
     oldNode.nodeValue = newNode.nodeValue
@@ -26,12 +36,16 @@ export function updateElement (parent, newNode, oldNode) {
     return;
   }
   updateAttributes(oldNode, newNode);
-  if (oldNode.getAttribute("component") !== null) return;
+  if (oldNode.getAttribute("data-component-name") !== null) return convertNodeToComponentData(oldNode);
+  
 
+  let childComponentData = {};
   const newChildren = [ ...newNode.childNodes ];
   const oldChildren = [ ...oldNode.childNodes ];
   const maxLength = Math.max(newChildren.length, oldChildren.length);
   for (let i = 0; i < maxLength; i++) {
-    updateElement(oldNode, newChildren[i], oldChildren[i]);
+    childComponentData = { ...childComponentData, ...updateElement(oldNode, newChildren[i], oldChildren[i]) };
   }
+
+  return childComponentData;
 }

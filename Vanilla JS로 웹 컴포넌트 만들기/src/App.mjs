@@ -1,7 +1,7 @@
 import Component from "./core/Component.mjs";
 import ItemAppender from "./components/ItemAppender.mjs";
-import Items from './components/Items.mjs';
-import ItemFilter from './components/ItemFilter.mjs';
+import Items from "./components/Items.mjs";
+import ItemFilter from "./components/ItemFilter.mjs";
 
 export default class App extends Component {
   setup() {
@@ -19,31 +19,41 @@ export default class App extends Component {
 
   template() {
     return `
-    <div class="itemAppender" component></div>
-    <div class="items" component></div>
-    <div class="itemFilter" component></div>
+    <div class="itemAppender" data-component-name="ItemAppender" data-key="1"></div>
+    <div class="items" data-component-name="Items" data-key="2"></div>
+    <div class="itemFilter" data-component-name="ItemFilter" data-key="3"></div>
     `;
   }
 
-  afterMount() {
-    this.childComponents = {
-      itemAppender: new ItemAppender(this.target.querySelector(".itemAppender"), () => { return {
-        addItem: this.addItem.bind(this),
-      }}),
-      items: new Items(this.target.querySelector(".items"), () => { return {
-        items: this.getFilteredItems(),
-        deleteItem: this.deleteItem.bind(this),
-        toggleItemFilter: this.toggleItemFilter.bind(this),
-      }}),
-      itemFilter: new ItemFilter(this.target.querySelector(".itemFilter"), () => { return {
-        filterItems: this.filterItems.bind(this),
-      }}),
+  generateChildComponent(name) {
+    if (name === "ItemAppender") {
+      return new ItemAppender(this.target.querySelector(".itemAppender"), () => {
+        return {
+          addItem: this.addItem.bind(this),
+        };
+      });
+    }
+    if (name === "Items") {
+      return new Items(this.target.querySelector(".items"), () => {
+        return {
+          items: this.getFilteredItems(),
+          deleteItem: this.deleteItem.bind(this),
+          toggleItemFilter: this.toggleItemFilter.bind(this),
+        };
+      });
+    }
+    if (name === "ItemFilter") {
+      return new ItemFilter(this.target.querySelector(".itemFilter"), () => {
+        return {
+          filterItems: this.filterItems.bind(this),
+        };
+      });
     }
   }
 
   getFilteredItems() {
     const { filter, items } = this.state;
-    if (filter) return items.filter(item => item.isFiltered === false);
+    if (filter) return items.filter((item) => item.isFiltered === false);
     return items;
   }
 
@@ -57,7 +67,10 @@ export default class App extends Component {
 
   deleteItem(index) {
     const items = [...this.state.items];
-    items.splice(items.findIndex(item => item.index === index), 1);
+    items.splice(
+      items.findIndex((item) => item.index === index),
+      1
+    );
     this.setState({ items });
   }
 
@@ -67,7 +80,7 @@ export default class App extends Component {
 
   toggleItemFilter(index) {
     const items = [...this.state.items];
-    const item = items.find(item => item.index === index);
+    const item = items.find((item) => item.index === index);
     item.isFiltered = !item.isFiltered;
     this.setState({ items });
   }

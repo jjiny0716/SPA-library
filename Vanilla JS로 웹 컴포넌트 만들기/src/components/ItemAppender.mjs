@@ -14,7 +14,10 @@ export default class ItemAppender extends Component {
   setEvents() {
     const { addItem } = this.props;
     this.addEventListener("keydown", ".itemAppendInput", (e) => {
-      if (e.key === "Enter") addItem(e.target.value); 
+      if (e.key === "Enter") {
+        addItem(e.target.value);
+        e.target.value = "";
+      }
     });
   }
 }
