@@ -12,10 +12,17 @@ function updateAttributes(oldNode, newNode) {
 }
 
 function convertNodeToComponentData(node) {
-  if (node instanceof Text || node.getAttribute("data-component-name") === null) return {}
-  return {
-    [node.getAttribute("data-key")]: node.getAttribute("data-component-name"),
-  };
+  if (!node || node instanceof Text) return {}
+
+  let childComponentData = {};
+  for (let child of node.childNodes) {
+    childComponentData = { ...childComponentData, ...convertNodeToComponentData(child)};
+  }
+
+  if (node.hasAttribute("data-key")) {
+    childComponentData = { [node.getAttribute("data-key")]: node.getAttribute("data-component-name"), ...childComponentData};
+  }
+  return childComponentData;
 }
 
 export function updateElement (parent, newNode, oldNode) {

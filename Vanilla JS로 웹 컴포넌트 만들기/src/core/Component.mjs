@@ -14,8 +14,8 @@ export default class Component {
     this.attacthedEventListeners = [];
     this.updateProps();
     this.setup();
-    this.setEvents();
     this.render();
+    this.setEvents();
     this.afterMount();
   }
 
@@ -37,8 +37,8 @@ export default class Component {
     for (let i = 0; i < max; i++) {
       childComponentData = { ...childComponentData, ...updateElement(target, newChildNodes[i], oldChildNodes[i]) };
     }
-
     adjustChildComponents(this, childComponentData);
+
     for (let childComponent of Object.values(this.childComponents)) {
       childComponent.updateProps();
       childComponent.render();
