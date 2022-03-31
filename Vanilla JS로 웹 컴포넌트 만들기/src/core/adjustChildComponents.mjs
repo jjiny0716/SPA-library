@@ -5,7 +5,7 @@ export function adjustChildComponents(parent, childComponentData) {
       delete childComponentData[key];
     }
     else {
-      childComponents[key].beforeUnmount();
+      childComponents[key].destroyComponent();
       delete childComponents[key]
     }
   }

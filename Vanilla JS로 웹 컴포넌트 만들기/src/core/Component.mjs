@@ -1,15 +1,17 @@
 import { updateElement } from "./updateElement.mjs";
-import { adjustChildComponents } from './adjustChildComponents.mjs';
+import { adjustChildComponents } from "./adjustChildComponents.mjs";
 
 export default class Component {
   target;
   props;
   state;
   childComponents;
+  attacthedEventListeners;
   constructor(target, propsGenerator) {
     this.target = target;
     this.propsGenerator = propsGenerator;
     this.childComponents = {};
+    this.attacthedEventListeners = [];
     this.updateProps();
     this.setup();
     this.setEvents();
@@ -22,14 +24,12 @@ export default class Component {
   }
 
   setup() {}
-  template() {return "";}
+  template() { return ""; }
   render() {
-    // 기존 Node를 복제한 후에 새로운 템플릿을 채워넣는다.
     const { target } = this;
     const newNode = target.cloneNode(true);
     newNode.innerHTML = this.template();
 
-    // DIFF알고리즘을 적용한다.
     let childComponentData = {};
     const oldChildNodes = [...target.childNodes];
     const newChildNodes = [...newNode.childNodes];
@@ -38,9 +38,7 @@ export default class Component {
       childComponentData = { ...childComponentData, ...updateElement(target, newChildNodes[i], oldChildNodes[i]) };
     }
 
-    // updateElement의 전이는 component에서 막힌다. 자식 component들을 업데이트해야함.
     adjustChildComponents(this, childComponentData);
-    // if (Object.keys(this.childComponents).length === 0) return;
     for (let childComponent of Object.values(this.childComponents)) {
       childComponent.updateProps();
       childComponent.render();
@@ -52,11 +50,25 @@ export default class Component {
   beforeUpdate() {}
   afterUpdate() {}
   beforeUnmount() {}
+  destroyComponent() {
+    this.beforeUnmount();
+    this.removeAllEventListener();
+  }
+
   setEvents() {}
   addEventListener(eventType, selector, callback) {
-    this.target.addEventListener(eventType, (e) => {
+    const listener = (e) => {
       if (e.target.closest(selector)) callback(e);
-    });
+    };
+    this.target.addEventListener(eventType, listener);
+    this.attacthedEventListeners.push({ eventType, listener });
+  }
+
+  removeAllEventListener() {
+    for (let { eventType, listener } of this.attacthedEventListeners) {
+      this.target.removeEventListener(eventType, listener);
+    }
+    this.attacthedEventListeners = [];
   }
 
   setState(newState) {
