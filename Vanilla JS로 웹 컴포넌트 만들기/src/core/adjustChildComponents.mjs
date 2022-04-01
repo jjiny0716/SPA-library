@@ -10,6 +10,6 @@ export function adjustChildComponents(parent, childComponentData) {
     }
   }
   for (let [key, componentName] of Object.entries(childComponentData)) {
-    childComponents[key] = parent.generateChildComponent(componentName);
+    childComponents[key] = parent.generateChildComponent(componentName, key);
   }
 }
