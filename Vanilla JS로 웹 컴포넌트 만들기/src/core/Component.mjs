@@ -38,7 +38,6 @@ export default class Component {
       childComponentData = { ...childComponentData, ...updateElement(target, newChildNodes[i], oldChildNodes[i]) };
     }
     adjustChildComponents(this, childComponentData);
-
     for (let childComponent of Object.values(this.childComponents)) {
       childComponent.updateProps();
       childComponent.render();
@@ -51,6 +50,10 @@ export default class Component {
   afterUpdate() {}
   beforeUnmount() {}
   destroyComponent() {
+    const childComponents = Object.values(this.childComponents)
+    for (let childComponent of childComponents) {
+      childComponent.destroyComponent();
+    }
     this.beforeUnmount();
     this.removeAllEventListener();
   }
