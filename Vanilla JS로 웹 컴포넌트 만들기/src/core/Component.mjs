@@ -1,5 +1,6 @@
 import { updateElement } from "./updateElement.mjs";
 import { adjustChildComponents } from "./adjustChildComponents.mjs";
+import ComponentError from './ComponentError.mjs';
 
 export default class Component {
   target;
@@ -8,6 +9,7 @@ export default class Component {
   childComponents;
   attacthedEventListeners;
   constructor(target, propsGenerator) {
+    if (!target) throw new ComponentError(`Target of component is ${target}`);
     this.target = target;
     this.propsGenerator = propsGenerator;
     this.childComponents = {};
