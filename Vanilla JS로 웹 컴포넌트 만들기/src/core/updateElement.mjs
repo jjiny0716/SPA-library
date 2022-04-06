@@ -6,7 +6,7 @@ function updateAttributes(oldNode, newNode) {
     oldNode.setAttribute(name, value);
   }
   for (const {name} of [ ...oldNode.attributes ]) {
-    if (newNode.getAttribute(name) !== undefined) continue;
+    if (newNode.hasAttribute(name)) continue;
     oldNode.removeAttribute(name);
   }
 }
