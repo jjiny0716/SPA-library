@@ -2,6 +2,9 @@ import Component from "./core/Component.mjs";
 import ItemAppender from "./components/ItemAppender.mjs";
 import Items from "./components/Items.mjs";
 import ItemFilter from "./components/ItemFilter.mjs";
+import InputA from './components/InputA.mjs';
+import InputB from './components/InputB.mjs';
+import APlusB from './components/APlusB.mjs';
 
 export default class App extends Component {
   setup() {
@@ -22,6 +25,9 @@ export default class App extends Component {
     <div class="itemAppender" data-component-name="ItemAppender" data-key="1"></div>
     <div class="items" data-component-name="Items" data-key="2"></div>
     <div class="itemFilter" data-component-name="ItemFilter" data-key="3"></div>
+    <div data-component-name="InputA" data-key="4"></div>
+    <div data-component-name="InputB" data-key="5"></div>
+    <div data-component-name="APlusB" data-key="6"></div>
     `;
   }
 
@@ -48,6 +54,15 @@ export default class App extends Component {
           filterItems: this.filterItems.bind(this),
         };
       });
+    }
+    if (name === "InputA") {
+      return new InputA(this.target.querySelector("[data-component-name='InputA']"));
+    }
+    if (name === "InputB") {
+      return new InputB(this.target.querySelector("[data-component-name='InputB']"));
+    }
+    if (name === "APlusB") {
+      return new APlusB(this.target.querySelector("[data-component-name='APlusB']"));
     }
   }
 

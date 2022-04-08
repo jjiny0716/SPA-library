@@ -1,4 +1,4 @@
-import ComponentError from './ComponentError.mjs';
+import { ComponentError } from './ComponentError.mjs';
 
 export function adjustChildComponents(parent, childComponentData) {
   const { childComponents } = parent; 

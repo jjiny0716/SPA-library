@@ -1,6 +1,7 @@
+import { observable, observe } from './observer.mjs';
 import { updateElement } from "./updateElement.mjs";
 import { adjustChildComponents } from "./adjustChildComponents.mjs";
-import ComponentError from './ComponentError.mjs';
+import { ComponentError } from './ComponentError.mjs';
 
 export default class Component {
   target;
@@ -16,7 +17,8 @@ export default class Component {
     this.attacthedEventListeners = [];
     this.updateProps();
     this.setup();
-    this.render();
+    this.state = observable(this.state || {});
+    observe(this.render.bind(this));
     this.setEvents();
     this.afterMount();
   }
