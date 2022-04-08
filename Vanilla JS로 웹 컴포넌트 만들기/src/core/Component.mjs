@@ -1,7 +1,7 @@
-import { observable, observe } from './observer.mjs';
+import { observable, observe } from "./observer.mjs";
 import { updateElement } from "./updateElement.mjs";
 import { adjustChildComponents } from "./adjustChildComponents.mjs";
-import { ComponentError } from './ComponentError.mjs';
+import { ComponentError } from "./ComponentError.mjs";
 
 export default class Component {
   target;
@@ -9,6 +9,7 @@ export default class Component {
   state;
   childComponents;
   attacthedEventListeners;
+  isMountFinished;
   constructor(target, propsGenerator) {
     if (!target) throw new ComponentError(`Target of component is ${target}`);
     this.target = target;
@@ -18,9 +19,10 @@ export default class Component {
     this.updateProps();
     this.setup();
     this.state = observable(this.state || {});
-    observe(this.render.bind(this));
+    observe(this.update.bind(this));
     this.setEvents();
     this.afterMount();
+    this.isMountFinished = true;
   }
 
   updateProps() {
@@ -28,7 +30,7 @@ export default class Component {
   }
 
   setup() {}
-  template() { return ""; }
+  template() {return "";}
   render() {
     const { target } = this;
     const newNode = target.cloneNode(true);
@@ -37,24 +39,27 @@ export default class Component {
     let childComponentData = {};
     const oldChildNodes = [...target.childNodes];
     const newChildNodes = [...newNode.childNodes];
-    const max = Math.max(oldChildNodes.length, newChildNodes.length);
-    for (let i = 0; i < max; i++) {
+    const maxLength = Math.max(oldChildNodes.length, newChildNodes.length);
+    for (let i = 0; i < maxLength; i++) {
       childComponentData = { ...childComponentData, ...updateElement(target, newChildNodes[i], oldChildNodes[i]) };
     }
     adjustChildComponents(this, childComponentData);
-    for (let childComponent of Object.values(this.childComponents)) {
-      childComponent.updateProps();
-      childComponent.render();
-    }
   }
 
-  generateChildComponent() {}
+  generateChildComponent(name, key) {}
   afterMount() {}
   beforeUpdate() {}
+  update() {
+    if (this.isMountFinished) this.beforeUpdate();
+    if (this.isMountFinished) this.updateProps();
+    this.render();
+    if (this.isMountFinished) this.afterUpdate();
+  }
+
   afterUpdate() {}
   beforeUnmount() {}
   destroyComponent() {
-    const childComponents = Object.values(this.childComponents)
+    const childComponents = Object.values(this.childComponents);
     for (let childComponent of childComponents) {
       childComponent.destroyComponent();
     }
@@ -79,9 +84,9 @@ export default class Component {
   }
 
   setState(newState) {
-    this.state = { ...this.state, ...newState };
-    this.beforeUpdate();
-    this.render();
-    this.afterUpdate();
+    for (let [key, value] of Object.entries(newState)) {
+      if (!this.state.hasOwnProperty(key)) continue;
+      this.state[key] = value;
+    }
   }
 }

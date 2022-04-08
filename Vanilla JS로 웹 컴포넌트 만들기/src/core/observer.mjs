@@ -8,7 +8,6 @@ export function observe(fn) {
 
 export function observable(obj) {
   const observerMap = {};
-
   return new Proxy(obj, {
     get(target, name) {
       if (!observerMap[name]) observerMap[name] = new Set();
