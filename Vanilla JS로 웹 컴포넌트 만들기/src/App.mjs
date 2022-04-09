@@ -2,9 +2,9 @@ import Component from "./core/Component.mjs";
 import ItemAppender from "./components/ItemAppender.mjs";
 import Items from "./components/Items.mjs";
 import ItemFilter from "./components/ItemFilter.mjs";
-import InputA from './components/InputA.mjs';
-import InputB from './components/InputB.mjs';
-import APlusB from './components/APlusB.mjs';
+import InputA from "./components/InputA.mjs";
+import InputB from "./components/InputB.mjs";
+import APlusB from "./components/APlusB.mjs";
 
 export default class App extends Component {
   setup() {
@@ -94,8 +94,8 @@ export default class App extends Component {
   }
 
   toggleItemFilter(index) {
-    const items = [...this.state.items];
-    const item = items.find((item) => item.index === index);
+    const { items } = this.state;
+    const item = [...items].find((item) => item.index === index);
     item.isFiltered = !item.isFiltered;
     this.setState({ items });
   }

@@ -1,4 +1,4 @@
-import { observable, observe } from "./observer.mjs";
+import { observe } from "./observer.mjs";
 import { updateElement } from "./updateElement.mjs";
 import { adjustChildComponents } from "./adjustChildComponents.mjs";
 import { ComponentError } from "./ComponentError.mjs";
@@ -18,7 +18,6 @@ export default class Component {
     this.attacthedEventListeners = [];
     this.updateProps();
     this.setup();
-    this.state = observable(this.state || {});
     observe(this.update.bind(this));
     this.setEvents();
     this.afterMount();
@@ -84,9 +83,7 @@ export default class Component {
   }
 
   setState(newState) {
-    for (let [key, value] of Object.entries(newState)) {
-      if (!this.state.hasOwnProperty(key)) continue;
-      this.state[key] = value;
-    }
+    this.state = { ...this.state, ...newState };
+    this.update();
   }
 }

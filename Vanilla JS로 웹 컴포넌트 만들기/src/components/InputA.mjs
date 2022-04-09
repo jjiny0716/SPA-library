@@ -3,7 +3,6 @@ import { abStore } from '../ABstore.mjs';
 
 export default class InputA extends Component {
   template() {
-
   return `
   <input class="input-a" type="text" value="${abStore.state.a}" />
   `
