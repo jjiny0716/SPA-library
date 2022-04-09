@@ -36,9 +36,8 @@ export function updateElement (parent, newNode, oldNode) {
     return;
   }
   if (newNode.nodeName !== oldNode.nodeName) {
-    const index = [ ...parent.childNodes ].indexOf(oldNode);
+    parent.insertBefore(newNode, oldNode);
     oldNode.remove();
-    parent.appendChild(newNode, index);
     return;
   }
   updateAttributes(oldNode, newNode);
