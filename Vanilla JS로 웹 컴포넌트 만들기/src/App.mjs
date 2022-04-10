@@ -22,25 +22,25 @@ export default class App extends Component {
 
   template() {
     return `
-    <div class="itemAppender" data-component-name="ItemAppender" data-key="1"></div>
-    <div class="items" data-component-name="Items" data-key="2"></div>
-    <div class="itemFilter" data-component-name="ItemFilter" data-key="3"></div>
-    <div data-component-name="InputA" data-key="4"></div>
-    <div data-component-name="InputB" data-key="5"></div>
-    <div data-component-name="APlusB" data-key="6"></div>
+    <div class="itemAppender" data-component="ItemAppender"></div>
+    <div class="items" data-component="Items"></div>
+    <div class="itemFilter" data-component="ItemFilter"></div>
+    <div data-component="InputA"></div>
+    <div data-component="InputB"></div>
+    <div data-component="APlusB"></div>
     `;
   }
 
-  generateChildComponent(name) {
+  generateChildComponent(target, name) {
     if (name === "ItemAppender") {
-      return new ItemAppender(this.target.querySelector(".itemAppender"), () => {
+      return new ItemAppender(target, () => {
         return {
           addItem: this.addItem.bind(this),
         };
       });
     }
     if (name === "Items") {
-      return new Items(this.target.querySelector(".items"), () => {
+      return new Items(target, () => {
         return {
           items: this.getFilteredItems(),
           deleteItem: this.deleteItem.bind(this),
@@ -49,20 +49,20 @@ export default class App extends Component {
       });
     }
     if (name === "ItemFilter") {
-      return new ItemFilter(this.target.querySelector(".itemFilter"), () => {
+      return new ItemFilter(target, () => {
         return {
           filterItems: this.filterItems.bind(this),
         };
       });
     }
     if (name === "InputA") {
-      return new InputA(this.target.querySelector("[data-component-name='InputA']"));
+      return new InputA(target);
     }
     if (name === "InputB") {
-      return new InputB(this.target.querySelector("[data-component-name='InputB']"));
+      return new InputB(target);
     }
     if (name === "APlusB") {
-      return new APlusB(this.target.querySelector("[data-component-name='APlusB']"));
+      return new APlusB(target);
     }
   }
 

@@ -11,7 +11,7 @@ export default class Component {
   attacthedEventListeners;
   isMountFinished;
   constructor(target, propsGenerator) {
-    if (!target) throw new ComponentError(`Target of component is ${target}`);
+    if (!target) throw new ComponentError(`Target of component is ${target} in '${this.constructor.name}'`);
     this.target = target;
     this.propsGenerator = propsGenerator;
     this.childComponents = {};
@@ -45,7 +45,7 @@ export default class Component {
     adjustChildComponents(this, childComponentData);
   }
 
-  generateChildComponent(name, key) {}
+  generateChildComponent(target, name, key) {}
   afterMount() {}
   beforeUpdate() {}
   update() {

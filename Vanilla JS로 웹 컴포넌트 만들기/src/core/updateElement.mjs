@@ -12,8 +12,10 @@ function updateAttributes(oldNode, newNode) {
 function convertNodeToComponentData(node) {
   if (!node || node instanceof Text) return {}
 
-  if (node.hasAttribute("data-key")) {
-    return { [node.getAttribute("data-key")]: node.getAttribute("data-component-name") };
+  if (node.hasAttribute("data-component")) {
+    const componentName = node.getAttribute("data-component")
+    const key = node.getAttribute("data-key") || componentName;
+    return { [key]: node.getAttribute("data-component") };
   }
 
   let childComponentData = {};
@@ -41,7 +43,7 @@ export function updateElement (parent, newNode, oldNode) {
     return;
   }
   updateAttributes(oldNode, newNode);
-  if (oldNode.getAttribute("data-component-name") !== null) return convertNodeToComponentData(oldNode);
+  if (oldNode.hasAttribute("data-component")) return convertNodeToComponentData(oldNode);
   
 
   let childComponentData = {};

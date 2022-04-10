@@ -13,7 +13,9 @@ export function adjustChildComponents(parent, childComponentData) {
     }
   }
   for (let [key, componentName] of Object.entries(childComponentData)) {
-    childComponents[key] = parent.generateChildComponent(componentName, key);
+    const selector = key === componentName ? `[data-component="${componentName}"]` : `[data-key="${key}"]`;
+    const target = parent.target.querySelector(selector);
+    childComponents[key] = parent.generateChildComponent(target, componentName, key);
     if (!childComponents[key]) throw new ComponentError(`Cannot generate component with name '${key}' at '${parent.target.dataset.componentName ?? "App"}'`);
   }
 }
