@@ -42,13 +42,18 @@ export default class Component {
     for (let i = 0; i < maxLength; i++) {
       childComponentData = { ...childComponentData, ...updateElement(target, newChildNodes[i], oldChildNodes[i]) };
     }
+
     adjustChildComponents(this, childComponentData);
   }
 
   generateChildComponent(target, name, key) {}
   afterMount() {}
   beforeUpdate() {}
-  update() {
+  update(target) {
+    if (target && target !== this.target) {
+      this.target = target;
+      this.setEvents();
+    }
     if (this.isMountFinished) this.beforeUpdate();
     if (this.isMountFinished) this.updateProps();
     this.render();
