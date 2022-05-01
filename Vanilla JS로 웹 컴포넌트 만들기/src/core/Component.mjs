@@ -10,6 +10,7 @@ export default class Component {
   childComponents;
   attacthedEventListeners;
   isMountFinished;
+  updateID;
   constructor(target, propsGenerator) {
     if (!target) throw new ComponentError(`Target of component is ${target} in '${this.constructor.name}'`);
     this.target = target;
@@ -19,9 +20,6 @@ export default class Component {
     this.updateProps();
     this.setup();
     observe(this.update.bind(this));
-    this.setEvents();
-    this.afterMount();
-    this.isMountFinished = true;
   }
 
   updateProps() {
@@ -49,15 +47,35 @@ export default class Component {
   generateChildComponent(target, name, key) {}
   afterMount() {}
   beforeUpdate() {}
-  update(target) {
-    if (target && target !== this.target) {
-      this.target = target;
+  update(newTarget) {
+    if (newTarget && newTarget !== this.target) {
+      this.target = newTarget;
       this.setEvents();
     }
+
+    if (!this.isMountFinished) {
+      // observer 등록
+      observe(this.lifeCycle.bind(this));
+    }
+    else {
+      // debounce
+      cancelAnimationFrame(this.updateID);
+      this.updateID = requestAnimationFrame(this.lifeCycle.bind(this));
+    }
+
+  }
+
+  lifeCycle() {
     if (this.isMountFinished) this.beforeUpdate();
     if (this.isMountFinished) this.updateProps();
     this.render();
     if (this.isMountFinished) this.afterUpdate();
+    
+    if (!this.isMountFinished) {
+      this.setEvents();
+      this.afterMount();
+      this.isMountFinished = true;
+    }
   }
 
   afterUpdate() {}
