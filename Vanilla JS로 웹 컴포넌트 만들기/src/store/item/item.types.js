@@ -1,0 +1,4 @@
+export const ITEM_ACTION_TYPES = {
+  SET_FILTER: "item/SET_IS_FILTERED",
+  SET_ITEMS: "item/SET_ITEMS",
+}

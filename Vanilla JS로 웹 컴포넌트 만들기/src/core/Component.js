@@ -1,7 +1,7 @@
-import { observe } from "./observer.mjs";
-import { updateElement } from "./updateElement.mjs";
-import { adjustChildComponents } from "./adjustChildComponents.mjs";
-import { ComponentError } from "./ComponentError.mjs";
+import { observe } from "./observer.js";
+import { updateElement } from "./updateElement.js";
+import { adjustChildComponents } from "./adjustChildComponents.js";
+import { ComponentError } from "./ComponentError.js";
 
 export default class Component {
   target;

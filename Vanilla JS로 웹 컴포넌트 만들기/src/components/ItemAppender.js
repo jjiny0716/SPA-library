@@ -1,4 +1,7 @@
-import Component from '../core/Component.mjs';
+import Component from '../core/Component.js';
+
+import { store } from '../store/store.js';
+import { addItem } from '../store/item/item.action.js';
 
 export default class ItemAppender extends Component {
   template() {
@@ -12,10 +15,9 @@ export default class ItemAppender extends Component {
   }
 
   setEvents() {
-    const { addItem } = this.props;
     this.addEventListener("keydown", ".itemAppendInput", (e) => {
       if (e.key === "Enter") {
-        addItem(e.target.value);
+        store.dispatch(addItem(store.getState().item.items, e.target.value));
         e.target.value = "";
       }
     });

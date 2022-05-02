@@ -1,25 +1,12 @@
-import Component from "./core/Component.mjs";
-import ItemAppender from "./components/ItemAppender.mjs";
-import Items from "./components/Items.mjs";
-import ItemFilter from "./components/ItemFilter.mjs";
-import InputA from "./components/InputA.mjs";
-import InputB from "./components/InputB.mjs";
-import APlusB from "./components/APlusB.mjs";
+import Component from "./core/Component.js";
+import ItemAppender from "./components/ItemAppender.js";
+import Items from "./components/Items.js";
+import ItemFilter from "./components/ItemFilter.js";
+import InputA from "./components/InputA.js";
+import InputB from "./components/InputB.js";
+import APlusB from "./components/APlusB.js";
 
 export default class App extends Component {
-  setup() {
-    this.state = {
-      filter: false,
-      items: [
-        {
-          index: 0,
-          content: "some item!",
-          isFiltered: false,
-        },
-      ],
-    };
-  }
-
   template() {
     return `
     <div class="itemAppender" data-component="ItemAppender"></div>
@@ -33,27 +20,13 @@ export default class App extends Component {
 
   generateChildComponent(target, name) {
     if (name === "ItemAppender") {
-      return new ItemAppender(target, () => {
-        return {
-          addItem: this.addItem.bind(this),
-        };
-      });
+      return new ItemAppender(target);
     }
     if (name === "Items") {
-      return new Items(target, () => {
-        return {
-          items: this.getFilteredItems(),
-          deleteItem: this.deleteItem.bind(this),
-          toggleItemFilter: this.toggleItemFilter.bind(this),
-        };
-      });
+      return new Items(target);
     }
     if (name === "ItemFilter") {
-      return new ItemFilter(target, () => {
-        return {
-          filterItems: this.filterItems.bind(this),
-        };
-      });
+      return new ItemFilter(target);
     }
     if (name === "InputA") {
       return new InputA(target);
@@ -64,39 +37,5 @@ export default class App extends Component {
     if (name === "APlusB") {
       return new APlusB(target);
     }
-  }
-
-  getFilteredItems() {
-    const { filter, items } = this.state;
-    if (filter) return items.filter((item) => item.isFiltered === false);
-    return items;
-  }
-
-  addItem(content) {
-    let { items } = this.state;
-    const index = items.length;
-    const isFiltered = false;
-    items = [...items, { index, content, isFiltered }];
-    this.setState({ items });
-  }
-
-  deleteItem(index) {
-    const items = [...this.state.items];
-    items.splice(
-      items.findIndex((item) => item.index === index),
-      1
-    );
-    this.setState({ items });
-  }
-
-  filterItems(filter) {
-    this.setState({ filter });
-  }
-
-  toggleItemFilter(index) {
-    const { items } = this.state;
-    const item = [...items].find((item) => item.index === index);
-    item.isFiltered = !item.isFiltered;
-    this.setState({ items });
   }
 }

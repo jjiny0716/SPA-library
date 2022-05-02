@@ -14,15 +14,20 @@ export function observable(obj) {
   return new Proxy(obj, {
     get(target, name) {
       if (!observerMap[name]) observerMap[name] = new Set();
+
+      // 부모 함수와 자식 함수에서 둘다 observe를 했을 때 둘다 같은 필드를 get 했을 때, 부모함수만 등록되게 함
       if (currentObserver !== null && observerStack.every(observer => !observerMap[name].has(observer))) {
         observerMap[name].add(currentObserver); 
       }
+
       return target[name];
     },
     set(target, name, value) {
-      if (JSON.stringify(target[name]) === JSON.stringify(value)) return true;
+      if (target[name] === value) return true;
+
       target[name] = value;
       observerMap[name].forEach((fn) => fn());
+      
       return true;
     },
   });
