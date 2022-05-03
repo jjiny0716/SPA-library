@@ -48,6 +48,9 @@ export default class Component {
   generateChildComponent(target, name, key) {}
   afterMount() {}
   beforeUpdate() {}
+  afterUpdate() {}
+  beforeUnmount() {}
+  
   update(newTarget) {
     if (newTarget && newTarget !== this.target) {
       this.target = newTarget;
@@ -57,13 +60,11 @@ export default class Component {
     if (!this.isMountFinished) {
       // observer 등록
       observe(this.lifeCycle.bind(this));
-    }
-    else {
+    } else {
       // debounce
       cancelAnimationFrame(this.updateID);
       this.updateID = requestAnimationFrame(this.lifeCycle.bind(this));
     }
-
   }
 
   lifeCycle() {
@@ -71,7 +72,7 @@ export default class Component {
     if (this.isMountFinished) this.updateProps();
     this.render();
     if (this.isMountFinished) this.afterUpdate();
-    
+
     if (!this.isMountFinished) {
       this.setEvents();
       this.afterMount();
@@ -79,8 +80,6 @@ export default class Component {
     }
   }
 
-  afterUpdate() {}
-  beforeUnmount() {}
   destroyComponent() {
     const childComponents = Object.values(this.childComponents);
     for (let childComponent of childComponents) {
