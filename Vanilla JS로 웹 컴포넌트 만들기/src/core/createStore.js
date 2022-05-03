@@ -11,7 +11,6 @@ export const createStore = (reducer) => {
   });
   
   function dispatch(action) {
-    const a = state.item;
     const newState = reducer(state, action);
 
     for (const [key, value] of Object.entries(newState)) {

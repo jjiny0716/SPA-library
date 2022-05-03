@@ -1,4 +1,4 @@
-import { observe } from "./observer.js";
+import { observable, observe } from "./observer.js";
 import { updateElement } from "./updateElement.js";
 import { adjustChildComponents } from "./adjustChildComponents.js";
 import { ComponentError } from "./ComponentError.js";
@@ -19,6 +19,7 @@ export default class Component {
     this.attacthedEventListeners = [];
     this.updateProps();
     this.setup();
+    this.state = this.state && observable(this.state);
     observe(this.update.bind(this));
   }
 
@@ -106,7 +107,13 @@ export default class Component {
   }
 
   setState(newState) {
-    this.state = { ...this.state, ...newState };
-    this.update();
+    for (let [key, value] of Object.entries(newState)) {
+      if (!this.state[key]) {
+        console.warn(`Component warning: Setting state which is not exists ('${key}') in '${this.constructor.name}'`);
+        continue;
+      }
+
+      this.state[key] = value;
+    }
   }
 }
