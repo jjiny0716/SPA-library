@@ -107,7 +107,7 @@ export default class Component {
 
   setState(newState) {
     for (let [key, value] of Object.entries(newState)) {
-      if (!this.state[key]) {
+      if (!this.state.hasOwnProperty(key)) {
         console.warn(`Component warning: Setting state which is not exists ('${key}') in '${this.constructor.name}'`);
         continue;
       }
