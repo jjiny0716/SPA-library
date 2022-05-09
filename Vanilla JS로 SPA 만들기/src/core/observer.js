@@ -26,7 +26,7 @@ export function observable(obj) {
       if (Object.is(target[name], value)) return true;
 
       target[name] = value;
-      observerMap[name].forEach((fn) => fn());
+      if (observerMap[name]) observerMap[name].forEach((fn) => fn());
 
       return true;
     },
