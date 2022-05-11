@@ -13,6 +13,9 @@ export function observable(obj) {
   const observerMap = {};
   return new Proxy(obj, {
     get(target, name) {
+      // Object.prototype의 메서드(hasOwnProperty) 참조시 바로 리턴
+      if (typeof target[name] === "function") return target[name];
+      
       if (!observerMap[name]) observerMap[name] = new Set();
 
       // 부모 함수와 자식 함수에서 둘다 observe를 했을 때 둘다 같은 필드를 get 했을 때, 부모함수만 등록되게 함
