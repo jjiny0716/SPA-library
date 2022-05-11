@@ -58,8 +58,7 @@ export default class Component {
     }
 
     if (!this.isMountFinished) {
-      // observer 등록
-      observe(this.lifeCycle.bind(this));
+      this.lifeCycle();
     } else {
       // debounce
       cancelAnimationFrame(this.updateID);
