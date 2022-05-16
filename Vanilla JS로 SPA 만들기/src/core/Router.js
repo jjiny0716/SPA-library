@@ -13,7 +13,7 @@ export default class Router {
     if (this.routes[path]) return this.routes[path];
     
     // 와일드카드 매칭
-    for (let i = path.length - 1 ; i >= 0 ; i++) {
+    for (let i = path.length - 1 ; i >= 0 ; i--) {
       const resultRoute = this.routes[`${path.slice(0, i)}*`];
       if (resultRoute) return resultRoute;
     }
