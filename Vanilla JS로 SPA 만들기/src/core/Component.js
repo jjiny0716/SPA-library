@@ -67,8 +67,8 @@ export default class Component {
   }
 
   lifeCycle() {
-    if (this.isMountFinished) this.beforeUpdate();
     if (this.isMountFinished) this.updateProps();
+    if (this.isMountFinished) this.beforeUpdate();
     this.render();
     if (this.isMountFinished) this.afterUpdate();
 
