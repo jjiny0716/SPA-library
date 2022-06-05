@@ -239,8 +239,163 @@ export default class App extends Component {
 - [번역 - 리액트는 언제 컴포넌트를 렌더링 하나요?](https://velog.io/@eunbinn/when-does-react-render-your-component)
 - [나만의 리액트 라이브러리 만들기](https://velog.io/@godori/build-your-own-react)
 
-
 ## 상태 관리 시스템
 
 - redux를 모방하여 만들어졌습니다.
 - [소스 코드](./Vanilla%20JS%EB%A1%9C%20SPA%20%EB%A7%8C%EB%93%A4%EA%B8%B0/src/core/createStore.js)
+
+### 기본 원리
+
+- flux 패턴을 이용한 저장소입니다.
+- action을 dispatch하여 저장소의 상태를 바꾸고, `getState()`를 이용해 저장소의 읽기 전용 상태를 받을 수 있습니다.
+- 컴포넌트의 렌더링 과정에 `getState()`를 이용해 특정 상태를 참조했다면, 해당 상태가 바뀔때 컴포넌트가 update됩니다.
+- `combineReducers()`를 사용해 reducer들을 합성할 수 있습니다.
+- store를 생성할 때 persistConfig를 제공하여 reducer의 상태를 localStorage에 저장하고 불러올 수 있습니다.
+
+### 리듀서 작성하기
+
+- reducer는 state와 action을 받아, 새로운 state를 반환하는 함수입니다.
+
+#### action type
+
+- action의 타입을 미리 정의하여 사용합니다.
+
+```js
+export const ITEM_ACTION_TYPES = {
+  SET_FILTER: "item/SET_IS_FILTERED",
+  SET_ITEMS: "item/SET_ITEMS",
+};
+```
+
+#### action creator
+
+- action을 생성해주는 함수를 만듭니다.
+- 해당 함수는 외부에서 store에 dispatch를 할 때 사용합니다.
+
+```js
+export function setFilter(boolean) {
+  // createAction은 type과 payload를 갖는 object의 형태(action)을 생성해주는 유틸 함수입니다.
+  return createAction(ITEM_ACTION_TYPES.SET_FILTER, boolean);
+}
+
+export function createAction(type, payload) {
+  return {
+    type,
+    payload,
+  };
+}
+```
+
+#### reducer
+
+- reducer는 state와 action을 받아, 새로운 state를 반환하는 함수입니다.
+- 그렇게 생성된 state는 store에 저장되어 외부에서 사용할 수 있게 됩니다.
+
+```js
+// 초기 상태를 정의합니다.
+const ITEM_INITIAL_STATE = {
+  filter: false,
+  items: [
+    {
+      id: 0,
+      content: "some item!",
+      isFiltered: false,
+    },
+  ],
+};
+
+export function itemReducer(state = ITEM_INITIAL_STATE, action = {}) {
+  const { type, payload } = action;
+
+  // action의 type에 따라 다른 상태를 리턴합니다.
+  switch (type) {
+    case ITEM_ACTION_TYPES.SET_FILTER:
+      return {
+        ...state,
+        filter: payload,
+      };
+    case ITEM_ACTION_TYPES.SET_ITEMS:
+      return {
+        ...state,
+        items: payload,
+      };
+    default:
+      return state;
+  }
+}
+```
+
+### store 만들기
+
+- 작성한 reducer를 이용해 store를 생성할 수 있습니다.
+- [소스 코드](./Vanilla%20JS%EB%A1%9C%20SPA%20%EB%A7%8C%EB%93%A4%EA%B8%B0/src/core/createStore.js)
+
+```js
+export const store = createStore(itemReducer);
+```
+
+- 이렇게 생성된 store의 상태를 외부에서 접근할 수 있고, action을 dispatch해서 상태를 변경할 수 있습니다.
+
+```js
+import Component from "../core/Component.js";
+
+import { store } from "../store/store.js";
+import { toggleItemFilter } from "../store/item/item.action.js";
+
+export default class Items extends Component {
+  template() {
+    // 컴포넌트에서 store의 상태에 접근하면, 추후에 store의 상태가 바뀔 때 update 됩니다.
+    const { items } = store.getState();
+
+    // 생략
+  }
+
+  setEvents() {
+    this.addEventListener("click", "button", (e) => {
+      const { isFiltered } = store.getState();
+
+      // store에 action을 dispatch해서 내부 상태를 바꿀 수 있습니다.
+      store.dispatch(toggleItemFilter(!isFiltered));
+    });
+  }
+}
+```
+
+#### combineReducers를 이용해 여러 reducer를 사용하기
+
+- [소스 코드](./Vanilla%20JS%EB%A1%9C%20SPA%20%EB%A7%8C%EB%93%A4%EA%B8%B0/src/core/combineReducers.js)
+
+```js
+import { combineReducers } from "../core/combineReducers.js";
+
+import { abReducer } from "./ab/ab.reducer.js";
+import { itemReducer } from "./item/item.reducer.js";
+
+// combineReducers 함수를 사용해 여러 리듀서를 하나의 리듀서로 만들 수 있습니다.
+export const rootReducer = combineReducers({
+  ab: abReducer,
+  item: itemReducer,
+});
+
+// 이렇게 생성된 리듀서는, action이 dispatch되었을 때 전달받은 리듀서들을 전부 업데이트 한 후
+// 반환된 상태들을 취합한 새로운 상태를 만들어 반환하는 함수가 됩니다.
+```
+
+#### localStorage에 store의 상태 저장하고 불러오기
+
+- [소스 코드](./Vanilla%20JS%EB%A1%9C%20SPA%20%EB%A7%8C%EB%93%A4%EA%B8%B0/src/core/createStore.js)
+
+```js
+// persistConfig를 createStore에 추가적으로 전달하여 특정 reducer의 상태를 저장하고 불러올 수 있습니다.
+const persistConfig = {
+  key: "root",
+  whitelist: ["item", "ab"],
+};
+
+export const store = createStore(rootReducer, persistConfig);
+```
+
+### 참고 자료
+
+- [Vanilla Javascript로 상태관리 시스템 만들기](https://junilhwang.github.io/TIL/Javascript/Design/Vanilla-JS-Store/)
+- [redux 공식 문서](https://ko.redux.js.org/introduction/getting-started/)

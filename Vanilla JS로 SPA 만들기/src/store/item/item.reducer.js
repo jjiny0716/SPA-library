@@ -21,7 +21,6 @@ export function itemReducer(state = ITEM_INITIAL_STATE, action = {}) {
         filter: payload,
       }
     case ITEM_ACTION_TYPES.SET_ITEMS:
-
       return {
         ...state,
         items: payload,
